@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ms Ngoc Academy - Học Tiếng Anh Thông Minh</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">  <!-- THƯ VIỆN CHUYỂN ĐỔI TEXT THÀNH HTML (MARKDOWN PARSER) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #2563eb; 
+            --primary-dark: #1e3a8a;
+            --accent: #f59e0b; 
+            --bg-body: #f4f7fb;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Inter', sans-serif; background-color: var(--bg-body);
+            color: var(--text-main); line-height: 1.6; -webkit-font-smoothing: antialiased;
+        }
+      
+
+        /* HEADER HIỆN ĐẠI */
+        .modern-header {
+            position: relative; background: #ffffff; padding: 80px 20px 60px;
+            text-align: center; overflow: hidden; border-bottom: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02); margin-bottom: 40px;
+        }
+        .modern-header::before {
+            content: ''; position: absolute; top: -50px; left: -10%; width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+            border-radius: 50%; pointer-events: none;
+        }
+        .modern-header::after {
+            content: ''; position: absolute; bottom: -50px; right: -5%; width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
+            border-radius: 50%; pointer-events: none;
+        }
+        .avatar-container { position: relative; width: 140px; height: 140px; margin: 0 auto 25px auto; z-index: 2; }
+        .avatar-pulse {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), #38bdf8);
+            animation: pulse-ring 2s infinite cubic-bezier(0.4, 0, 0.2, 1); z-index: -1;
+        }
+        @keyframes pulse-ring { 0% { transform: scale(0.9); opacity: 0.8; } 100% { transform: scale(1.4); opacity: 0; } }
+        .avatar-img {
+            width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
+            border: 4px solid white; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; z-index: 2;
+        }
+        .anim-icon {
+            position: absolute; font-size: 24px; background: white; border-radius: 50%;
+            padding: 8px; box-shadow: 0 8px 15px rgba(0,0,0,0.1); z-index: 3; animation: float-icon 3s ease-in-out infinite;
+        }
+        .icon-left { top: 10%; left: -25px; animation-delay: 0s; }
+        .icon-right { bottom: 15%; right: -25px; animation-delay: 1s; }
+        .icon-top { top: -20px; right: 10px; animation-delay: 2s; font-size: 20px;}
+        @keyframes float-icon { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-12px) rotate(8deg); } }
+
+        .gradient-text {
+            font-size: clamp(2.2rem, 5vw, 3.2rem); font-weight: 800; margin-bottom: 10px; letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+        }
+        .tagline { font-size: 1.15rem; color: var(--text-muted); font-weight: 500; max-width: 600px; margin: 0 auto 20px auto; }
+        .header-badges { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;}
+        .badge { font-size: 0.85rem; font-weight: 600; padding: 6px 14px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px; }
+        .badge.premium { background: rgba(245, 158, 11, 0.15); color: #d97706; }
+        .badge.update { background: rgba(37, 99, 235, 0.1); color: var(--primary); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px 80px 20px; }
+        
+        .loader { text-align: center; padding: 50px; font-weight: 600; color: var(--primary); display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* THANH TÌM KIẾM */
+        .filter-bar {
+            display: flex; gap: 15px; margin-bottom: 40px; flex-wrap: wrap;
+            background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            padding: 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04); position: sticky; top: 15px; z-index: 10;
+        }
+        .search-input, .category-select {
+            padding: 14px 20px; border: 2px solid transparent; border-radius: 14px;
+            font-family: 'Inter', sans-serif; font-size: 1rem; outline: none; transition: 0.3s;
+            background: rgba(241, 245, 249, 0.8);
+        }
+        .search-input { flex: 1; min-width: 250px; }
+        .category-select { min-width: 200px; cursor: pointer; color: var(--text-main); font-weight: 600;}
+        .search-input:focus, .category-select:focus { background: white; border-color: rgba(37, 99, 235, 0.4); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+
+        /* LƯỚI BÀI VIẾT */
+        .post-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 35px; }
+        .post-card {
+            background: var(--bg-card); border-radius: 24px; overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.04);
+            display: flex; flex-direction: column; text-decoration: none; color: inherit;
+            opacity: 0; transform: translateY(30px); transition: all 0.4s ease;
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        .post-card:hover { transform: translateY(-10px); box-shadow: 0 25px 40px rgba(37, 99, 235, 0.1); }
+        .thumb-wrap { width: 100%; height: 230px; overflow: hidden; position: relative; }
+        .thumb-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+        .post-card:hover .thumb-wrap img { transform: scale(1.06); }
+        
+        .badge-category {
+            position: absolute; top: 15px; left: 15px; background: rgba(255, 255, 255, 0.9);
+            color: var(--primary-dark); font-weight: 700; font-size: 0.75rem; 
+            padding: 6px 14px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .card-body { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; }
+        .card-date { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; margin-bottom: 12px; }
+       .card-title { 
+            font-family: 'Be Vietnam Pro', sans-serif; /* Đổi sang font chuẩn Việt Nam */
+            font-size: 1.3rem; 
+            font-weight: 600; /* Mức độ đậm vừa phải, thanh thoát không bị dính nét */
+            color: var(--text-main); 
+            line-height: 1.45; 
+            margin-bottom: 12px; 
+            letter-spacing: 0;
+            transition: color 0.3s;
+        }
+        .post-card:hover .card-title { color: var(--primary); }
+        .card-desc { font-size: 1rem; color: var(--text-muted); margin-bottom: 25px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        .btn-learn { 
+            margin-top: auto; background: var(--bg-body); color: var(--primary); font-weight: 600; 
+            padding: 12px 20px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; 
+        }
+        .btn-learn span { transition: transform 0.3s; background: white; padding: 4px 8px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
+        .post-card:hover .btn-learn { background: var(--primary); color: white; }
+        .post-card:hover .btn-learn span { transform: translateX(5px); color: var(--primary); }
+
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 50px; }
+        .page-btn { background: white; border: 1px solid var(--border-color); color: var(--text-main); padding: 12px 24px; border-radius: 30px; font-weight: 600; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.02);}
+        .page-btn:hover:not(:disabled) { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(37,99,235,0.25);}
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .page-info { font-weight: 600; color: var(--text-muted); padding: 10px 20px; }
+
+        /* TRANG CHI TIẾT (ĐỌC BÀI) & BÌNH LUẬN */
+        .article-view { max-width: 820px; margin: 0 auto; background: var(--bg-card); padding: 50px 60px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.06); animation: fadeInUp 0.5s ease forwards; border: 1px solid rgba(0,0,0,0.03);}
+        .btn-back { display: inline-flex; align-items: center; margin-bottom: 30px; background: var(--bg-body); color: var(--text-main); padding: 12px 24px; border-radius: 30px; text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: 0.3s; }
+        .btn-back:hover { background: #e2e8f0; transform: translateX(-5px); }
+       .art-title { 
+            font-family: 'Be Vietnam Pro', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.6rem); 
+            font-weight: 700; 
+            color: var(--text-main); 
+            line-height: 1.3; 
+            margin-bottom: 20px; 
+            letter-spacing: -0.5px;
+        }
+        .art-meta { color: var(--text-muted); font-size: 1rem; margin-bottom: 40px; padding-bottom: 25px; border-bottom: 1px solid var(--border-color); display: flex; gap: 15px; flex-wrap: wrap;}
+        .art-tag { background: rgba(37, 99, 235, 0.1); color: var(--primary); padding: 5px 14px; border-radius: 10px; font-weight: 600;}
+        .art-hero { width: 100%; max-height: 500px; object-fit: cover; border-radius: 20px; margin-bottom: 40px; box-shadow: 0 15px 30px rgba(0,0,0,0.08); }
+        
+        /* Cấu trúc CSS cho nội dung HTML được Parse từ Markdown */
+        .art-content { font-size: 1.15rem; line-height: 1.9; color: #334155; }
+        .art-content h1, .art-content h2, .art-content h3 { color: var(--primary-dark); margin-top: 1.5em; margin-bottom: 0.5em; }
+        .art-content p { margin-bottom: 1.2em; }
+        .art-content img { max-width: 100%; border-radius: 12px; margin: 1em 0; box-shadow: 0 4px 10px rgba(0,0,0,0.05);}
+        .art-content a { color: var(--primary); text-decoration: none; font-weight: 500;}
+        .art-content a:hover { text-decoration: underline; }
+        .art-content ul, .art-content ol { margin-bottom: 1.2em; padding-left: 25px; }
+        .art-content li { margin-bottom: 0.5em; }
+        .art-content blockquote {
+            border-left: 5px solid var(--accent); background: #fffbeb; 
+            padding: 15px 20px; margin: 1.5em 0; border-radius: 0 12px 12px 0;
+            font-style: italic; color: #92400e; font-weight: 500;
+        }
+
+         .art-content code {
+            font-family: 'Be Vietnam Pro', sans-serif; /* Đưa về font chuẩn */
+            background-color: #f1f5f9; /* Nền xám nhạt */
+            color: #d97706; /* Chữ màu cam đậm nổi bật */
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.95em;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* 2. Ép mượt Font tiếng Việt cho toàn bộ bài viết */
+        .art-content, .art-title, p, li {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* 3. Tùy chỉnh thêm trích dẫn (Blockquote) cho đẹp hơn */
+        .art-content blockquote {
+            border-left: 4px solid var(--primary);
+            background: #eff6ff;
+            color: #1e3a8a;
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            border-radius: 0 12px 12px 0;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        /* KHU VỰC BÌNH LUẬN */
+        .comments-section {
+            margin-top: 50px; padding-top: 40px; border-top: 2px dashed var(--border-color);
+        }
+        .comments-title { font-size: 1.5rem; color: var(--text-main); margin-bottom: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px;}
+
+        @media (max-width: 768px) {
+            .modern-header { padding: 50px 15px 40px; }
+            .article-view { padding: 30px 20px; border-radius: 20px;} 
+            .filter-bar { flex-direction: column; top: 0; border-radius: 0; border: none; box-shadow: none; background: transparent; backdrop-filter: none; margin-bottom: 20px;}
+        }
+    </style>
+</head>
+<body>
+
+    <!-- KHỞI TẠO SDK BÌNH LUẬN FACEBOOK -->
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v19.0" nonce="KhR32gXQ"></script>
+
+    <header class="modern-header" onclick="window.location.href=window.location.pathname" style="cursor: pointer;">
+        <div class="avatar-container">
+            <div class="avatar-pulse"></div>
+            <img src="https://scontent.fdad3-4.fna.fbcdn.net/v/t39.30808-6/358558533_3535771650036770_678695724279764578_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=1d70fc&_nc_ohc=oi4PBqSXTi8Q7kNvwFuh_f7&_nc_oc=AdrTDolnQq2gnFLELr5nJRg2pJzwepV4vtaMSrdRmPSfKoWcVhMQFgziXZB6EWP86o6DA6gNLclnTj3Si481-73D&_nc_zt=23&_nc_ht=scontent.fdad3-4.fna&_nc_gid=KcHwbCJZeyVIa7kBtY4vMA&_nc_ss=7b2a8&oh=00_Af6xnoODDsHKb5JgxY7-McsMFFMvDOVXiGKxlzgr_MvIXw&oe=69FF8352" alt="Thầy Giáo Avatar" class="avatar-img">
+            <div class="anim-icon icon-left">📖</div>
+            <div class="anim-icon icon-right">💡</div>
+            <div class="anim-icon icon-top">🎯</div>
+        </div>
+
+        <h1 class="gradient-text">Ms Ngoc Academy</h1>
+        <p class="tagline">Góc chia sẻ kiến thức, từ vựng và kinh nghiệm chinh phục Tiếng Anh cùng Giáo Viên chuyên nghiệp.</p>
+        
+        <div class="header-badges">
+            <span class="badge premium">✨ Hoàn toàn miễn phí</span>
+            <span class="badge update">🚀 Nội dung cập nhật liên tục</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="filter-container" class="filter-bar" style="display: none;">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Bạn muốn học gì hôm nay? (Ví dụ: Thì hiện tại, IELTS...)" oninput="filterPosts()">
+            <select id="categorySelect" class="category-select" onchange="filterPosts()">
+                <option value="all">📚 Tất cả khóa học</option>
+            </select>
+        </div>
+
+        <div id="app-container" style="scroll-margin-top: 100px;">
+            <div class="loader">
+                <div class="spinner"></div>
+                Đang chuẩn bị bài giảng...
+            </div>
+        </div>
+
+        <div id="pagination-container" class="pagination" style="display: none;"></div>
+    </div>
+
+<script>
+    // ============== DÁN WEB APP URL CỦA BẠN VÀO ĐÂY ==============
+    const API_URL = "https://script.google.com/macros/s/AKfycbzpyr1n4fuiCAxPOS6DeGxUEOIgPJilwfCl1xsn4engBkmrDvMwPtJtFwk3eXDdX1Vf/exec";
+
+    // CẤU HÌNH BỘ CHUYỂN ĐỔI MARKDOWN THÀNH HTML
+    marked.setOptions({
+        breaks: true,
+        gfm: true
+    });
+
+    let allPosts =[];
+    let filteredPosts =[];
+    const POSTS_PER_PAGE = 6; 
+    let currentPage = 1;
+
+    // --- HÀM MỚI: CHUYỂN ĐỔI NGÀY THÁNG CHO ĐẸP ---
+    function formatDate(dateString) {
+        if (!dateString) return 'Mới cập nhật';
+        
+        // Chuyển chuỗi gốc thành Object thời gian
+        const date = new Date(dateString);
+        
+        // Kiểm tra nếu không phải định dạng ngày tháng thì trả về nguyên bản
+        if (isNaN(date.getTime())) return dateString; 
+        
+        // Lấy ngày, tháng, năm (thêm số 0 đằng trước nếu bé hơn 10)
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        
+        // Trả về định dạng DD/MM/YYYY (Ví dụ: 01/03/2017)
+        return `${day}/${month}/${year}`;
+    }
+
+    async function initApp() {
+        try {
+            const response = await fetch(API_URL + "?timestamp=" + new Date().getTime());
+            const json = await response.json();
+            
+            if (!json.data || json.data.length === 0) {
+                document.getElementById('app-container').innerHTML = '<div style="text-align:center; padding: 40px;">Chưa có bài học nào được đăng tải.</div>';
+                return;
+            }
+
+            allPosts = json.data.map((post, index) => { post.originalId = index; return post; });
+            filteredPosts = [...allPosts];
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = urlParams.get('id');
+
+            if (postId !== null && allPosts[postId]) {
+                document.querySelector('.filter-bar').style.display = 'none';
+                renderDetail(allPosts[postId]);
+            } else {
+                document.getElementById('filter-container').style.display = 'flex';
+                setupCategories();
+                renderGrid();
+            }
+        } catch (error) {
+            document.getElementById('app-container').innerHTML = '<div style="text-align:center; color:red;">❌ Lỗi kết nối máy chủ. Vui lòng thử lại.</div>';
+        }
+    }
+
+    function setupCategories() {
+        const selectBox = document.getElementById('categorySelect');
+        let categories = new Set();
+        allPosts.forEach(post => {
+            if(post.Category && post.Category.trim() !== '') categories.add(post.Category.trim());
+        });
+        categories.forEach(cat => { selectBox.innerHTML += `<option value="${cat}">${cat}</option>`; });
+    }
+
+    function filterPosts() {
+        const keyword = document.getElementById('searchInput').value.toLowerCase();
+        const selectedCat = document.getElementById('categorySelect').value;
+
+        filteredPosts = allPosts.filter(post => {
+            const titleMatch = (post.Title || '').toLowerCase().includes(keyword);
+            const descMatch = (post.Description || '').toLowerCase().includes(keyword);
+            const isMatchKeyword = titleMatch || descMatch;
+            const isMatchCategory = (selectedCat === 'all') || (post.Category === selectedCat);
+            return isMatchKeyword && isMatchCategory;
+        });
+
+        currentPage = 1; 
+        renderGrid();
+    }
+
+    function renderGrid() {
+        const container = document.getElementById('app-container');
+        const paginationContainer = document.getElementById('pagination-container');
+        
+        if(filteredPosts.length === 0) {
+            container.innerHTML = '<div style="text-align:center; padding: 60px; background: white; border-radius: 20px;">😕 Không tìm thấy bài học nào. Hãy thử từ khoá khác!</div>';
+            paginationContainer.style.display = 'none';
+            return;
+        }
+
+        const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
+        const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+        const postsToShow = filteredPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
+
+        let gridHTML = '<div class="post-grid">';
+        
+        postsToShow.forEach((post, index) => {
+            let imgSrc = post.ImageURL ? post.ImageURL : 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=1000&auto=format&fit=crop';
+            let excerpt = post.Description ? post.Description : ((post.Content || '').substring(0, 110) + '...');
+            let delay = index * 0.1; 
+            
+            // SỬ DỤNG HÀM formatDate VỪA TẠO Ở ĐÂY
+            let displayDate = formatDate(post.Date);
+
+            gridHTML += `
+                <a href="?id=${post.originalId}" class="post-card" style="animation-delay: ${delay}s">
+                    <div class="thumb-wrap">
+                        <span class="badge-category">${post.Category || '💡 Bài học'}</span>
+                        <img src="${imgSrc}" loading="lazy" alt="Thumbnail">
+                    </div>
+                    <div class="card-body">
+                        <span class="card-date">📅 ${displayDate}</span>
+                        <h2 class="card-title">${post.Title || 'Bài học mới'}</h2>
+                        <p class="card-desc">${excerpt}</p>
+                        <div class="btn-learn">
+                            Bắt đầu học <span>➔</span>
+                        </div>
+                    </div>
+                </a>
+            `;
+        });
+        gridHTML += '</div>';
+        container.innerHTML = gridHTML;
+
+        if (totalPages > 1) {
+            paginationContainer.style.display = 'flex';
+            paginationContainer.innerHTML = `
+                <button class="page-btn" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>← Trước</button>
+                <div class="page-info">${currentPage} / ${totalPages}</div>
+                <button class="page-btn" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>Sau →</button>
+            `;
+        } else {
+            paginationContainer.style.display = 'none';
+        }
+    }
+
+    function changePage(direction) {
+        currentPage += direction;
+        renderGrid();
+        document.getElementById('app-container').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function renderDetail(post) {
+        const container = document.getElementById('app-container');
+        const heroImg = post.ImageURL ? `<img src="${post.ImageURL}" class="art-hero" alt="Hero">` : '';
+        const catTag = post.Category ? `<span class="art-tag">${post.Category}</span>` : '';
+        
+        const parsedHTMLContent = marked.parse(post.Content || 'Nội dung đang được cập nhật...');
+        const currentUrl = window.location.href;
+
+        // SỬ DỤNG HÀM formatDate Ở ĐÂY NỮA
+        let displayDate = formatDate(post.Date);
+
+        container.innerHTML = `
+            <div class="article-view">
+                <a href="${window.location.pathname}" class="btn-back">← Trở về danh sách</a>
+                <h1 class="art-title">${post.Title || 'Chưa có tên'}</h1>
+                <div class="art-meta">
+                    <span>📅 Đăng ngày: ${displayDate}</span>
+                    ${catTag}
+                </div>
+                ${heroImg}
+                <div class="art-content">${parsedHTMLContent}</div>
+                
+            </div>
+        `;
+
+        if (typeof FB !== 'undefined') {
+            FB.XFBML.parse(container);
+        }
+    }
+
+    initApp();
+</script>
+
+</body>
+</html>
