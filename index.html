@@ -583,7 +583,162 @@
             margin-bottom: 0.5em;
         }
 
-        /* loader */
+        /* ========== STATS BAR ========== */
+        .stats-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 36px;
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(212,175,55,0.2);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        .stat-item {
+            flex: 1;
+            text-align: center;
+            padding: 22px 16px;
+            border-right: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+
+        .stat-item:last-child { border-right: none; }
+        .stat-item:hover { background: #F8FAFE; }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--xanh-duong-dam), var(--vang-anh-kim));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: block;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        /* ========== READING TIME CHIP ========== */
+        .reading-chip {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: #F0F4F9;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        /* ========== THUMBNAIL OVERLAY ========== */
+        .thumb-gradient {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 90px;
+            background: linear-gradient(to top, rgba(10,37,64,0.5), transparent);
+            pointer-events: none;
+        }
+
+        /* ========== CATEGORY COLOR SYSTEM ========== */
+        .badge-category { background: var(--do-do); }
+        .badge-category[data-cat="Speak Now 1"] { background: #4A55A2; }
+        .badge-category[data-cat="Giao Tiếp"] { background: #2D6A4F; }
+        .badge-category[data-cat="Từ Vựng"] { background: #7B3F00; }
+
+        /* ========== READING PROGRESS BAR ========== */
+        .reading-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--vang-anh-kim), var(--do-do));
+            transition: width 0.1s linear;
+            z-index: 9999;
+        }
+
+        /* ========== BACK TO TOP ========== */
+        .back-to-top {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: var(--xanh-duong-dam);
+            color: var(--vang-anh-kim);
+            border: none;
+            cursor: pointer;
+            font-size: 1.4rem;
+            font-weight: 700;
+            box-shadow: 0 8px 24px rgba(10,37,64,0.3);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 998;
+        }
+
+        .back-to-top.visible { display: flex; }
+        .back-to-top:hover { transform: translateY(-4px); background: var(--vang-anh-kim); color: var(--xanh-duong-dam); }
+
+        /* ========== ARTICLE TOC ========== */
+        .art-toc {
+            background: linear-gradient(135deg, #F8FAFE, #FFFFFF);
+            border: 1px solid rgba(212,175,55,0.25);
+            border-radius: 24px;
+            padding: 24px 28px;
+            margin-bottom: 40px;
+        }
+
+        .art-toc-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .art-toc ol {
+            padding-left: 20px;
+            margin: 0;
+        }
+
+        .art-toc li { margin-bottom: 6px; }
+
+        .art-toc a {
+            color: var(--xanh-duong-dam);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.93rem;
+            transition: color 0.2s;
+        }
+
+        .art-toc a:hover { color: var(--vang-anh-kim); }
+
+        /* ========== loader ========== */
         .loader {
             text-align: center;
             padding: 60px;
@@ -611,6 +766,7 @@
             .post-grid { gap: 24px; }
         }
     </style>
+    <div class="reading-progress" id="readingProgress"></div>
     <div id="fb-root"></div>
     <script async defer crossorigin="anonymous" src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v19.0" nonce="KhR32gXQ"></script>
 </head>
@@ -648,39 +804,53 @@
         </div>
         <div id="pagination-container" class="pagination" style="display: none;"></div>
     </div>
+    <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
     <script>
-        // API URL bảng dữ liệu (giữ nguyên kết nối)
         const API_URL = "https://script.google.com/macros/s/AKfycbxMVIOh5srZlERM4XxsbnvXzXtlwuR3GHrB7qYYomVMWcR8FfgmVRYtYl1Sy2HxveM83g/exec";
-        
+
         marked.setOptions({ breaks: true, gfm: true });
-        
+
         let allPosts = [];
         let filteredPosts = [];
         const POSTS_PER_PAGE = 6;
         let currentPage = 1;
-        
+
+        // Back-to-top & reading progress
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('backToTop');
+            if (btn) btn.classList.toggle('visible', window.scrollY > 400);
+
+            const prog = document.getElementById('readingProgress');
+            if (prog) {
+                const docH = document.documentElement.scrollHeight - window.innerHeight;
+                prog.style.width = docH > 0 ? (window.scrollY / docH * 100) + '%' : '0%';
+            }
+        });
+
         function formatDate(dateString) {
             if (!dateString) return 'Mới đăng';
             const date = new Date(dateString);
             if (isNaN(date.getTime())) return dateString;
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
+            return `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}/${date.getFullYear()}`;
         }
-        
+
+        function calcReadingTime(content) {
+            const words = (content || '').replace(/[#*`>\[\]!\-|]/g, '').split(/\s+/).filter(Boolean).length;
+            return Math.max(1, Math.round(words / 200));
+        }
+
         async function initApp() {
             try {
                 const response = await fetch(API_URL + "?timestamp=" + new Date().getTime());
                 const json = await response.json();
                 if (!json.data || json.data.length === 0) {
-                    document.getElementById('app-container').innerHTML = '<div style="text-align:center; padding: 60px; background:white; border-radius:32px;">📭 Chưa có bài học nào. Quay lại sau nhé!</div>';
+                    document.getElementById('app-container').innerHTML = '<div style="text-align:center;padding:60px;background:white;border-radius:32px;">📭 Chưa có bài học nào. Quay lại sau nhé!</div>';
                     return;
                 }
                 allPosts = json.data.map((post, idx) => { post.originalId = idx; return post; });
                 filteredPosts = [...allPosts];
-                
+
                 const urlParams = new URLSearchParams(window.location.search);
                 const postId = urlParams.get('id');
                 if (postId !== null && allPosts[postId]) {
@@ -689,41 +859,52 @@
                 } else {
                     document.getElementById('filter-container').style.display = 'flex';
                     setupCategories();
+                    renderStats();
                     renderGrid();
                 }
             } catch (error) {
-                document.getElementById('app-container').innerHTML = '<div style="text-align:center; padding: 50px; color:#8A1C2C;">⚠️ Lỗi kết nối máy chủ. Vui lòng thử lại sau.</div>';
+                document.getElementById('app-container').innerHTML = '<div style="text-align:center;padding:50px;color:#8A1C2C;">⚠️ Lỗi kết nối máy chủ. Vui lòng thử lại sau.</div>';
             }
         }
-        
+
         function setupCategories() {
             const selectBox = document.getElementById('categorySelect');
-            let categories = new Set();
-            allPosts.forEach(post => {
-                if(post.Category && post.Category.trim() !== '') categories.add(post.Category.trim());
-            });
+            const categories = new Set();
+            allPosts.forEach(p => { if (p.Category && p.Category.trim()) categories.add(p.Category.trim()); });
             categories.forEach(cat => { selectBox.innerHTML += `<option value="${cat}">📌 ${cat}</option>`; });
         }
-        
+
+        function renderStats() {
+            const categories = new Set(allPosts.map(p => p.Category).filter(Boolean));
+            const totalWords = allPosts.reduce((sum, p) => sum + (p.Content || '').split(/\s+/).length, 0);
+            const statsEl = document.createElement('div');
+            statsEl.className = 'stats-section';
+            statsEl.innerHTML = `
+                <div class="stat-item"><span class="stat-number">${allPosts.length}</span><span class="stat-label">Bài học</span></div>
+                <div class="stat-item"><span class="stat-number">${categories.size}</span><span class="stat-label">Chủ đề</span></div>
+                <div class="stat-item"><span class="stat-number">${Math.round(totalWords/1000)}K+</span><span class="stat-label">Từ nội dung</span></div>
+                <div class="stat-item"><span class="stat-number">100%</span><span class="stat-label">Miễn phí</span></div>
+            `;
+            document.getElementById('app-container').before(statsEl);
+        }
+
         function filterPosts() {
             const keyword = document.getElementById('searchInput').value.toLowerCase();
             const selectedCat = document.getElementById('categorySelect').value;
             filteredPosts = allPosts.filter(post => {
-                const titleMatch = (post.Title || '').toLowerCase().includes(keyword);
-                const descMatch = (post.Description || '').toLowerCase().includes(keyword);
-                const isMatchKeyword = titleMatch || descMatch;
-                const isMatchCategory = (selectedCat === 'all') || (post.Category === selectedCat);
-                return isMatchKeyword && isMatchCategory;
+                const match = (post.Title || '').toLowerCase().includes(keyword) || (post.Description || '').toLowerCase().includes(keyword);
+                const catMatch = selectedCat === 'all' || post.Category === selectedCat;
+                return match && catMatch;
             });
             currentPage = 1;
             renderGrid();
         }
-        
+
         function renderGrid() {
             const container = document.getElementById('app-container');
             const paginationContainer = document.getElementById('pagination-container');
-            if(filteredPosts.length === 0) {
-                container.innerHTML = '<div style="text-align:center; padding: 60px; background:#FFFFFF; border-radius:32px; border:1px solid #E9EEF4;">🔍 Không tìm thấy nội dung phù hợp. Thử từ khóa khác.</div>';
+            if (filteredPosts.length === 0) {
+                container.innerHTML = '<div style="text-align:center;padding:60px;background:#FFF;border-radius:32px;border:1px solid #E9EEF4;">🔍 Không tìm thấy nội dung phù hợp. Thử từ khóa khác.</div>';
                 paginationContainer.style.display = 'none';
                 return;
             }
@@ -732,29 +913,32 @@
             const postsToShow = filteredPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
             let gridHTML = '<div class="post-grid">';
             postsToShow.forEach((post, idx) => {
-                let imgSrc = post.ImageURL ? post.ImageURL : 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=1000&auto=format';
-                let excerpt = post.Description ? post.Description : (post.Content || '').substring(0, 110) + '…';
-                let displayDate = formatDate(post.Date);
+                const imgSrc = post.ImageURL || 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=1000&auto=format';
+                const excerpt = post.Description || (post.Content || '').substring(0, 110) + '…';
+                const readMins = calcReadingTime(post.Content);
+                const cat = post.Category || 'CHUYÊN ĐỀ';
                 gridHTML += `
-                    <a href="?id=${post.originalId}" class="post-card" style="animation-delay: ${idx * 0.08}s">
+                    <a href="?id=${post.originalId}" class="post-card" style="animation-delay:${idx * 0.08}s">
                         <div class="thumb-wrap">
-                            <span class="badge-category">${post.Category || 'CHUYÊN ĐỀ'}</span>
+                            <span class="badge-category" data-cat="${cat}">${cat}</span>
+                            <div class="thumb-gradient"></div>
                             <img src="${imgSrc}" loading="lazy" alt="lesson thumbnail">
                         </div>
                         <div class="card-body">
-                            <span class="card-date">📅 ${displayDate}</span>
+                            <div class="card-meta-row">
+                                <span class="card-date">📅 ${formatDate(post.Date)}</span>
+                                <span class="reading-chip">⏱ ${readMins} phút đọc</span>
+                            </div>
                             <h2 class="card-title">${post.Title || 'Học thuật chuyên sâu'}</h2>
                             <p class="card-desc">${excerpt}</p>
-                            <div class="btn-learn">
-                                Khám phá ngay <span>→</span>
-                            </div>
+                            <div class="btn-learn">Khám phá ngay <span>→</span></div>
                         </div>
                     </a>
                 `;
             });
             gridHTML += '</div>';
             container.innerHTML = gridHTML;
-            if(totalPages > 1) {
+            if (totalPages > 1) {
                 paginationContainer.style.display = 'flex';
                 paginationContainer.innerHTML = `
                     <button class="page-btn" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>← Trước</button>
@@ -765,19 +949,42 @@
                 paginationContainer.style.display = 'none';
             }
         }
-        
+
         function changePage(direction) {
             currentPage += direction;
             renderGrid();
             document.getElementById('app-container').scrollIntoView({ behavior: 'smooth' });
         }
-        
+
+        function buildTOC(content) {
+            const headings = [...content.matchAll(/<h2[^>]*>(.*?)<\/h2>/gi)];
+            if (headings.length < 2) return '';
+            const items = headings.map((m, i) => {
+                const text = m[1].replace(/<[^>]+>/g, '');
+                const id = 'section-' + i;
+                return { text, id };
+            });
+            // Inject IDs into rendered content
+            let idx = 0;
+            const contentWithIds = content.replace(/<h2([^>]*)>(.*?)<\/h2>/gi, (match, attrs, inner) => {
+                const id = 'section-' + idx++;
+                return `<h2${attrs} id="${id}">${inner}</h2>`;
+            });
+            const listItems = items.map(it => `<li><a href="#${it.id}">${it.text}</a></li>`).join('');
+            return { toc: `<div class="art-toc"><div class="art-toc-title">📋 Mục lục bài học</div><ol>${listItems}</ol></div>`, contentWithIds };
+        }
+
         function renderDetail(post) {
             const container = document.getElementById('app-container');
             const heroImg = post.ImageURL ? `<img src="${post.ImageURL}" class="art-hero" alt="featured">` : '';
             const catTag = post.Category ? `<span class="art-tag">${post.Category}</span>` : '';
-            const parsedHTMLContent = marked.parse(post.Content || 'Nội dung đang được cập nhật...');
+            const readMins = calcReadingTime(post.Content);
             const displayDate = formatDate(post.Date);
+            let parsedContent = marked.parse(post.Content || 'Nội dung đang được cập nhật...');
+            const tocResult = buildTOC(parsedContent);
+            const tocHTML = tocResult ? tocResult.toc : '';
+            if (tocResult) parsedContent = tocResult.contentWithIds;
+
             container.innerHTML = `
                 <div class="article-view">
                     <a href="${window.location.pathname}" class="btn-back">← Quay lại thư viện</a>
@@ -785,23 +992,22 @@
                     <div class="art-meta">
                         <span>📆 Cập nhật: ${displayDate}</span>
                         ${catTag}
-                        <span style="margin-left:auto;">✨ Ms Ngoc Academy</span>
+                        <span class="reading-chip" style="margin-left:auto;">⏱ ${readMins} phút đọc</span>
                     </div>
                     ${heroImg}
-                    <div class="art-content">${parsedHTMLContent}</div>
-                    <div class="comments-section" style="margin-top: 48px; padding-top: 32px; border-top: 2px dashed rgba(212,175,55,0.3);">
-                        <div class="comments-title" style="font-size: 1.4rem; font-weight:700; display:flex; gap:12px; align-items:center;">
-                            💬 Góc thảo luận <span style="font-size: 0.8rem; background:#F1F5F9; padding:4px 12px; border-radius:40px;">Cộng đồng học giả</span>
+                    ${tocHTML}
+                    <div class="art-content">${parsedContent}</div>
+                    <div class="comments-section" style="margin-top:48px;padding-top:32px;border-top:2px dashed rgba(212,175,55,0.3);">
+                        <div class="comments-title" style="font-size:1.4rem;font-weight:700;display:flex;gap:12px;align-items:center;">
+                            💬 Góc thảo luận <span style="font-size:0.8rem;background:#F1F5F9;padding:4px 12px;border-radius:40px;">Cộng đồng học giả</span>
                         </div>
                         <div class="fb-comments" data-href="${window.location.href}" data-width="100%" data-numposts="5" data-colorscheme="light"></div>
                     </div>
                 </div>
             `;
-            if (typeof FB !== 'undefined') {
-                FB.XFBML.parse(container);
-            }
+            if (typeof FB !== 'undefined') FB.XFBML.parse(container);
         }
-        
+
         initApp();
     </script>
 </body>
